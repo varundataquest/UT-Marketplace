@@ -1,134 +1,141 @@
-# UT Marketplace 🤘
+# Longhorn Exchange: A Scalable Campus Marketplace Solution
 
-## Your Official UT Austin Marketplace
+## Technical Overview
 
-UT Marketplace is a dedicated online marketplace built exclusively for UT Austin students, leveraging advanced cloud computing technologies for seamless performance and scalability. Buy, sell, and trade textbooks, furniture, electronics, and more with your fellow Longhorns safely and easily.
+Longhorn Exchange is a full-stack, cloud-native marketplace application designed for the UT Austin student community. It leverages a modern Jamstack-inspired architecture, separating the frontend UI from a highly scalable, serverless backend. The application primarily utilizes the Base44 platform for its Backend-as-a-Service (BaaS) capabilities, encompassing data persistence, authentication, file storage, and integrated services, augmented by custom serverless functions deployed on Deno Deploy.
 
----
+## Architecture
 
-## ☁️ Cloud-First Architecture
+The application follows a distributed architecture, comprising three main logical tiers:
 
-This application is built entirely on cloud infrastructure, primarily through the **Base44 platform**, ensuring high availability, automatic scaling, and enterprise-grade security:
+1.  **Frontend (Client-Side Application):**
+    *   Built with **React**, providing a dynamic and responsive user interface.
+    *   Utilizes **React Router DOM** for client-side routing.
+    *   Relies on **Shadcn/ui** components for a consistent and accessible design system, styled with **Tailwind CSS**.
+    *   Interacts with the Base44 platform SDK (`@base44/sdk`) for direct entity access and user authentication, and consumes custom serverless functions via HTTP.
 
-### **Backend as a Service (BaaS)**
-- **Cloud Database**: All entities (Listings, Users, Trades, Messages) are stored in managed cloud databases with automatic scaling and backup
-- **Authentication**: Secure user management with Google OAuth integration, handled entirely in the cloud
-- **File Storage**: Images and uploads stored in cloud-based object storage with global CDN distribution
+2.  **Base44 Platform (Managed Backend Services):**
+    *   **Entities (Data Layer):** JSON Schema-defined data models (e.g., `Listing`, `User`, `Trade`, `Message`, `ContactRequest`) are persisted in a managed PostgreSQL database. Row-Level Security (RLS) is automatically enforced based on defined schemas, ensuring data isolation and access control at the database level (e.g., `rls.write` policies for `User` entity).
+    *   **Authentication & Authorization:** Handles user identity via Google OAuth, session management, and role-based access (`admin`/`user`).
+    *   **File Storage:** Provides secure cloud storage for uploaded assets (e.g., listing images) with public URLs.
+    *   **Core Integrations:** Offers pre-built integrations to external APIs (e.g., LLM invocation, file upload, email sending) as managed serverless endpoints.
 
-### **Serverless Computing**
-- **Functions**: All backend logic runs as serverless functions that automatically scale based on demand
-- **Zero Infrastructure Management**: No servers to provision, maintain, or monitor
-- **Pay-per-use**: Only pay for actual compute time used
+3.  **Serverless Functions (Deno Deploy):**
+    *   Custom business logic requiring external API calls or complex processing is encapsulated in **Deno Deploy** functions (JavaScript/TypeScript).
+    *   These functions are deployed to a global edge network, minimizing latency and providing automatic scaling.
+    *   They are exposed as HTTP handlers (`Deno.serve`) and are secured by Base44's authentication mechanism, allowing frontend clients to invoke them securely.
+    *   Leverages Deno's native Web APIs (`fetch`, `Request`, `Response`) and supports `npm:` specifiers for external dependencies.
 
-### **Cloud Integrations**
-- **AI Services**: OpenAI integration for smart suggestions and content moderation
-- **Email Services**: Cloud-based email delivery for notifications
-- **Image Processing**: Cloud-powered image analysis and optimization
-- **Voice Processing**: Serverless voice-to-text conversion for hands-free search
+**Data Flow Example (Listing Creation with AI/Compliance):**
+1.  **Frontend (CreateListing.jsx):** User inputs listing details, uploads images.
+2.  **Image Upload (`@/integrations/Core/UploadFile`):** Frontend invokes Base44's `UploadFile` integration, sending the file directly to cloud storage. A URL is returned.
+3.  **AI Suggestion (`@/integrations/Core/InvokeLLM`):** If an image is uploaded, frontend may call `InvokeLLM` with the image URL and a prompt for title/category/price suggestions. This integration handles the LLM interaction (e.g., OpenAI's GPT models).
+4.  **Compliance Check (`functions/complianceCheck.js`):** Before final submission, frontend calls the custom `complianceCheck` Deno Deploy function, passing listing text and image URLs. This function, in turn, interacts with third-party moderation APIs (e.g., OpenAI Moderation API, internal campus policy checks) to determine content appropriateness.
+5.  **Entity Creation (`@/entities/Listing.create`):** If compliance is passed, the frontend invokes the `Listing.create()` method from the Base44 SDK. This call is securely transmitted to the Base44 backend, which persists the new listing record in the managed database.
 
----
+## Core Technologies
 
-## ✨ Features
+*   **Frontend Framework:** React 18
+*   **UI Components:** Shadcn/ui
+*   **Styling:** Tailwind CSS 3.x
+*   **Icons:** Lucide React
+*   **Date Utilities:** `date-fns` (for client-side formatting), `moment` (for general use)
+*   **Form Management:** `react-hook-form`
+*   **Routing:** `react-router-dom`
+*   **Animations:** `framer-motion`
+*   **Charting:** `recharts`
+*   **3D Viewer:** `three.js` (`<ARViewer>` component utilizes `ModelViewer`)
+*   **Drag and Drop:** `@hello-pangea/dnd`
+*   **Rich Text Editor:** `react-quill`
+*   **Markdown Renderer:** `react-markdown`
+*   **Map Integration:** `react-leaflet`
+*   **Backend Platform:** Base44 (Managed Entities, Auth, File Storage, Core Integrations)
+*   **Serverless Runtime:** Deno (for custom functions)
+    *   Specifically, functions like `complianceCheck`, `demandForecasting`, `photogrammetry`, `voiceSearch` are deployed as `Deno.serve` HTTP handlers.
+    *   External Deno dependencies are managed via `npm:` specifiers (e.g., `npm:openai`, `npm:jspdf`, `npm:stream-chat`).
+*   **External APIs:**
+    *   OpenAI API (for LLM inference in `InvokeLLM` and content moderation in `complianceCheck`).
+    *   Supabase (Base44's underlying database is based on PostgreSQL, with RLS for data access).
 
-*   **Seamless Listing Creation**: Easily list your items for sale with intuitive forms, AI-powered title, category, and price suggestions based on your uploaded images.
-*   **Smart Search & Browse**: Efficiently find items using a powerful search bar, advanced filters (category, condition, price range), and sorting options.
-*   **Intuitive Trading System**: Propose trades for items you want by offering your own listings, with clear options to accept, decline, or delete trade requests.
-*   **Secure Meetup Locations**: Discover and navigate to recommended safe meetup spots on and around the UT Austin campus, complete with safety ratings and features.
-*   **Direct Contact & In-App Communication**: Connect with sellers directly through secure contact requests, revealing phone numbers only when approved.
-*   **Personalized Profiles**: Manage your listings, track your sales/purchases, and update your profile information.
-*   **Content Moderation**: Listings are automatically checked for compliance with campus policies and community guidelines, ensuring a safe environment for everyone.
-*   **Voice Assistant**: A hands-free way to search for listings using natural language commands.
-*   **Responsive Design**: A beautiful and fully functional experience on both desktop and mobile devices.
+## Data Model (Entities)
 
----
+The application's data is structured around several key entities, defined by JSON Schema and managed by the Base44 platform. All entities automatically include `id`, `created_date`, `updated_date`, and `created_by` (user email).
 
-## 🛠️ Technologies Used
+*   `Listing`: Core item for sale/trade. Attributes include `title`, `description`, `price`, `category`, `condition`, `images`, `seller_email`, `status`, `views`, `compliance_score`, `model_3d_url`. RLS ensures only listing owners can update their own listings.
+*   `User`: Extends the built-in user profile with `student_id`, `year`, `major`, `trust_score`, `total_sales`, `total_purchases`, `profile_image`, `bio`, `paypal_username`, `phone`. RLS allows users to update their own profiles.
+*   `Trade`: Represents a trade proposal between users, linking `offered_listing_id` and `requested_listing_id`. Includes `status` (`pending`, `accepted`, `declined`, `cancelled`, `completed`), `offerer_email`, `receiver_email`, `value_difference`, `message`. RLS ensures only involved parties can read/update.
+*   `Message`: Stores in-app communications within `conversation_id`-grouped threads. Includes `sender_email`, `recipient_email`, `content`, `is_read`, `message_type` (e.g., `text`, `meetup_proposal`). RLS restricts access to conversation participants.
+*   `ContactRequest`: Facilitates secure contact initiation without immediate phone number disclosure. Includes `requester_email`, `owner_email`, `listing_id`, `phone_number`, `status` (`pending`, `number_viewed`, `contacted`). RLS ensures privacy.
+*   `Review`: Enables user feedback post-transaction, linking `listing_id`, `reviewer_email`, `reviewed_email`, `rating`, `comment`.
+*   `Favorite`: Allows users to bookmark listings.
+*   `ComplianceLog`: Internal audit trail for content moderation flags.
 
-### **Frontend**
-*   **React**: Frontend framework for building the user interface
-*   **Tailwind CSS**: Utility-first CSS framework for rapid styling
-*   **shadcn/ui**: Reusable UI components built with Tailwind CSS and React
-*   **Lucide React**: Icon library for a consistent visual language
+## Serverless Functions (`/functions`)
 
-### **Cloud Infrastructure**
-*   **Base44 Platform**: Complete cloud backend solution providing:
-  - Managed database with automatic scaling
-  - Serverless function execution
-  - User authentication and management
-  - File storage and CDN delivery
-  - API gateway and routing
-*   **Deno Runtime**: Serverless functions for backend logic (complianceCheck, searchByVoice, demandForecasting, photogrammetry)
-*   **OpenAI API**: Cloud-based AI services for content moderation and smart suggestions
-*   **Cloud Storage**: Scalable object storage for images and file uploads
+Each function within this directory is an independent, versioned serverless endpoint optimized for specific tasks:
 
-### **Development Tools**
-*   **date-fns**: For robust date manipulation and formatting
-*   **Vite**: Fast build tool and development server
+*   `complianceCheck.js`:
+    *   **Purpose:** Content moderation. Analyzes `title`, `description`, and `images` for policy violations.
+    *   **Integration:** Calls OpenAI's Moderation API for advanced text analysis and performs keyword/image name pattern matching.
+    *   **Output:** Returns `complianceScore`, `blocked` status, and user-friendly messages/recommendations.
+    *   **Security:** Requires `OPENAI_API_KEY` (managed via Base44 secrets) and user authentication.
+*   `demandForecasting.js`:
+    *   **Purpose:** Provides insights into market demand for specific categories.
+    *   **Logic:** Simulates Prophet-like forecasting based on historical listing data, identifying seasonal peaks.
+    *   **Integration:** Fetches historical `Listing` data via Base44 SDK.
+*   `photogrammetry.js`:
+    *   **Purpose:** Simulates the generation of 3D models from listing images.
+    *   **Logic:** Returns a mock 3D model URL and confidence score. In a production environment, this would integrate with a specialized photogrammetry service.
+    *   **Updates:** Persists `model_3d_url` and `model_confidence` back to the `Listing` entity.
+*   `searchByVoice.js`:
+    *   **Purpose:** Processes natural language queries from the voice assistant for listing search.
+    *   **Logic:** Parses search terms from the voice query and performs a keyword-based search against active `Listing` entities, scoring relevance.
+*   `messagesSend.js`:
+    *   **Purpose:** Handles sending new messages within conversations.
+    *   **Logic:** Creates a `Message` entity, generating a consistent `conversation_id` based on participants and `listing_id`.
+*   `campusDensity.js`:
+    *   **Purpose:** Provides real-time mock data on campus area density and safety.
+    *   **Logic:** Generates dynamic density metrics for various UT Austin hotspots based on time-of-day and day-of-week heuristics.
+    *   **Output:** Includes `hotspots` data and `safeZones` for recommended meetup locations.
+*   `predictiveAnalytics.js`:
+    *   **Purpose:** Predicts time-to-sale for a given listing and offers optimization suggestions.
+    *   **Logic:** Uses a multi-factor model considering category, condition, price relativity to market average, image quality, and description length.
+    *   **Integration:** Fetches `Listing` data and comparable market data via Base44 SDK.
 
----
+## Frontend Structure
 
-## 🚀 Getting Started
+The React frontend maintains a clear, component-driven structure:
 
-This project leverages cloud computing for zero-configuration deployment and development:
+*   `/pages`: Top-level components representing distinct application views (e.g., `Dashboard.js`, `Browse.js`, `CreateListing.js`).
+*   `/components`: Reusable UI modules, often nested within pages (e.g., `/listings/ListingCard.jsx`, `/voice/VoiceAssistant.jsx`, `/smartprice/SmartPriceAnalyzer.jsx`).
+    *   Adheres to principles of small, focused components for maintainability.
+*   `/ar`: Components related to Augmented Reality (e.g., `ARViewer`, `ModelViewer`).
+*   `/dataviz`: Components for data visualization (e.g., `PriceHistoryChart`).
+*   `/utils`: Helper functions, such as `createPageUrl` for consistent internal navigation.
 
-### **Option 1: Cloud Development (Recommended)**
- **Automatic Setup**: The platform handles all dependencies, environment setup, and cloud infrastructure
- **Instant Deployment**: Your app is immediately available with global CDN distribution
+## Security & Compliance
 
-### **Option 2: Local Development**
-```bash
-# Clone the repository
-git clone https://github.com/varundataquest/UT-Marketplace.git
-cd UT-Marketplace
+Security is a paramount concern, addressed at multiple layers:
 
-# Install dependencies
-npm install
+*   **Authentication:** All user interactions requiring identification are secured via Base44's managed Google OAuth.
+*   **Authorization:** User roles (`admin`, `user`) are enforced for sensitive operations (e.g., `AdminDashboard` access).
+*   **Row-Level Security (RLS):** Database access is granularly controlled by RLS policies defined directly in entity schemas, ensuring users can only access data they are authorized for (e.g., users can only read messages where they are sender/recipient).
+*   **Content Moderation Pipeline:** The `complianceCheck` function provides proactive moderation, blocking or flagging listings that violate community guidelines or legal restrictions. This includes AI-driven content analysis.
+*   **Secrets Management:** Sensitive API keys (e.g., `OPENAI_API_KEY`) are stored securely as environment variables within the Base44 platform and are not exposed in client-side code.
+*   **Secure Communications:** All API calls between frontend, Base44 services, and Deno Deploy functions are secured via HTTPS.
 
-# Start development server
-npm run dev
-```
+## Development & Deployment
 
-### **Environment Configuration**
-Cloud-based features require API keys managed securely in the Base44 workspace:
-- `OPENAI_API_KEY`: For AI-powered suggestions and content moderation
-- `GOOGLE_OAUTH_CLIENT_ID`: For secure user authentication
-- Additional keys are automatically managed by the Base44 platform
+*   **Development Environment:** The application is developed within the Base44 integrated development environment, providing real-time code changes and live previews.
+*   **Local Development:** Supports local development with the Base44 CLI for custom serverless functions and testing.
+*   **Deployment:** Base44 automatically builds and deploys frontend assets and Deno functions to a global CDN and Deno Deploy, respectively. This serverless, managed approach eliminates the need for manual DevOps.
+*   **Continuous Deployment:** Changes pushed to the Base44 workspace are automatically built and deployed, providing a streamlined CI/CD pipeline.
 
----
+## Further Enhancements
 
-## 💡 Usage
-
-*   **Browse**: Explore available listings by navigating to the "Browse" page from the top navigation bar. Use the search and filter options to narrow down your choices.
-*   **Sell**: To list an item, click "Sell" in the navigation. You'll be guided through the process, including uploading images and providing item details.
-*   **Trade**: On a listing detail page, if the item is not yours, you'll see a "Trade" button. Click it to propose a trade by offering one of your own listed items. Manage your trades on the "Trades" page.
-*   **Campus Map**: Find safe meetup locations on campus by visiting the "Campus Map" page.
-
----
-
-## ☁️ Cloud Benefits
-
-*   **Global Availability**: Your app is served from edge locations worldwide for optimal performance
-*   **Automatic Scaling**: Handles traffic spikes without manual intervention
-*   **Built-in Security**: Enterprise-grade security with automatic updates and monitoring
-*   **Cost Efficiency**: Pay only for resources used, with automatic optimization
-*   **Zero Maintenance**: No server management, updates, or infrastructure concerns
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! If you find a bug or have an idea for an improvement, please open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the `LICENSE` file for details.
-
----
-
-## 📞 Contact
-
-For any questions or support, please open an issue in this repository.
-
-**Hook 'em Horns! 🤘**
+*   Real-time chat functionality for messages using a service like Stream Chat.
+*   Push notifications for trade updates, new messages, or price drops.
+*   Enhanced AI-powered price recommendations using real-time market data.
+*   Integration with campus-specific identity management systems for student verification.
+*   Advanced analytics and reporting for administrators.
+*   Machine learning models for personalized item recommendations.
