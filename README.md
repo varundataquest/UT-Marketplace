@@ -1,8 +1,8 @@
-# Longhorn Exchange 🤘
+# UT Marketplace 🤘
 
-## Your Official UT Austin Marketplace - Powered by Cloud Computing!
+## Your Official UT Austin Marketplace
 
-Longhorn Exchange is a dedicated online marketplace built exclusively for UT Austin students, leveraging advanced cloud computing technologies for seamless performance and scalability. Buy, sell, and trade textbooks, furniture, electronics, and more with your fellow Longhorns safely and easily.
+UT Marketplace is a dedicated online marketplace built exclusively for UT Austin students, leveraging advanced cloud computing technologies for seamless performance and scalability. Buy, sell, and trade textbooks, furniture, electronics, and more with your fellow Longhorns safely and easily.
 
 ---
 
@@ -72,9 +72,8 @@ This application is built entirely on cloud infrastructure, primarily through th
 This project leverages cloud computing for zero-configuration deployment and development:
 
 ### **Option 1: Cloud Development (Recommended)**
-1. **Access on Base44**: Log in to your Base44 account and create a new application or import this project
-2. **Automatic Setup**: The platform handles all dependencies, environment setup, and cloud infrastructure
-3. **Instant Deployment**: Your app is immediately available with global CDN distribution
+ **Automatic Setup**: The platform handles all dependencies, environment setup, and cloud infrastructure
+ **Instant Deployment**: Your app is immediately available with global CDN distribution
 
 ### **Option 2: Local Development**
 ```bash
