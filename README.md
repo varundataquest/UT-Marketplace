@@ -1,5 +1,5 @@
 # Longhorn Exchange: A Scalable Campus Marketplace Solution
-# Link to App: https://app--longhorn-exchange-2e180a2a.base44.app/
+## Temporary Link to WebApp: https://app--longhorn-exchange-2e180a2a.base44.app/
 ## Technical Overview
 
 Longhorn Exchange is a full-stack, cloud-native marketplace application designed for the UT Austin student community. It leverages a modern Jamstack-inspired architecture, separating the frontend UI from a highly scalable, serverless backend. The application primarily utilizes the Base44 platform for its Backend-as-a-Service (BaaS) capabilities, encompassing data persistence, authentication, file storage, and integrated services, augmented by custom serverless functions deployed on Deno Deploy.
