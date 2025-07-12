@@ -4,6 +4,26 @@
 
 Longhorn Exchange is a full-stack, cloud-native marketplace application designed for the UT Austin student community. It leverages a modern Jamstack-inspired architecture, separating the frontend UI from a highly scalable, serverless backend. The application primarily utilizes the Base44 platform for its Backend-as-a-Service (BaaS) capabilities, encompassing data persistence, authentication, file storage, and integrated services, augmented by custom serverless functions deployed on Deno Deploy.
 
+##
+The landing page of Longhorn Exchange welcomes UT Austin students with a clean UI and quick access to browse or create listings. Users can also shop by predefined categories like Textbooks and Furniture:
+
+<img width="500" alt="Screenshot 2025-07-09 at 11 41 56 PM" src="https://github.com/user-attachments/assets/72489ec5-e95e-4362-9f5d-ec04c9043b05" />
+
+Marketplace view displays active marketplace listings with images, prices, categories, and filtering options. Users can initiate contact or propose trades directly from listing cards:
+
+<img width="500" alt="Screenshot 2025-07-09 at 11 42 13 PM" src="https://github.com/user-attachments/assets/a9e75b64-e509-4568-956b-5b3a8d37a71b" />
+
+The trading window shows real-time trade proposals between users, including offered items, requested items, cash differences, and messages. Enables users to track and respond to trade activity:
+
+<img width="500" alt="Screenshot 2025-07-09 at 11 42 30 PM" src="https://github.com/user-attachments/assets/4da3eaa0-c43d-4158-b247-eacb9bafaa6f" />
+
+The Campus Map shows recommended UT Austin campus spots for safe in-person trades, with photos, safety ratings, hours, and security features. Each location card highlights traffic levels, visibility, and unique attributes like landmark status or 24/7 access. Users can view details, check crowd levels, and get directions directly from the page:
+
+<img width="500" alt="Screenshot 2025-07-09 at 11 42 43 PM" src="https://github.com/user-attachments/assets/8fa5af94-8cec-43b8-a64b-a5660b679468" />
+
+
+
+
 ## Architecture
 
 The application follows a distributed architecture, comprising three main logical tiers:
@@ -139,21 +159,4 @@ Security is a paramount concern, addressed at multiple layers:
 *   Integration with campus-specific identity management systems for student verification.
 *   Advanced analytics and reporting for administrators.
 *   Machine learning models for personalized item recommendations.
-##
-The landing page of Longhorn Exchange welcomes UT Austin students with a clean UI and quick access to browse or create listings. Users can also shop by predefined categories like Textbooks and Furniture:
-
-<img width="500" alt="Screenshot 2025-07-09 at 11 41 56 PM" src="https://github.com/user-attachments/assets/72489ec5-e95e-4362-9f5d-ec04c9043b05" />
-
-Marketplace view displays active marketplace listings with images, prices, categories, and filtering options. Users can initiate contact or propose trades directly from listing cards:
-
-<img width="500" alt="Screenshot 2025-07-09 at 11 42 13 PM" src="https://github.com/user-attachments/assets/a9e75b64-e509-4568-956b-5b3a8d37a71b" />
-
-The trading window shows real-time trade proposals between users, including offered items, requested items, cash differences, and messages. Enables users to track and respond to trade activity:
-
-<img width="500" alt="Screenshot 2025-07-09 at 11 42 30 PM" src="https://github.com/user-attachments/assets/4da3eaa0-c43d-4158-b247-eacb9bafaa6f" />
-
-The Campus Map shows recommended UT Austin campus spots for safe in-person trades, with photos, safety ratings, hours, and security features. Each location card highlights traffic levels, visibility, and unique attributes like landmark status or 24/7 access. Users can view details, check crowd levels, and get directions directly from the page:
-
-<img width="500" alt="Screenshot 2025-07-09 at 11 42 43 PM" src="https://github.com/user-attachments/assets/8fa5af94-8cec-43b8-a64b-a5660b679468" />
-
 
